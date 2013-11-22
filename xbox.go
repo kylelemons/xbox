@@ -439,7 +439,7 @@ func XBoxOne(controller *usb.Device, in, out usb.Endpoint) {
 			_    = data[0] // sequence number
 			_    = data[1] // unknown
 			btn1 = data[2] // ybxaSM?N S=share, M=Menu, N=Sync
-			btn2 = data[3] // ?lr?RLDU r=R-Thumb, l=L-Thumb, R=D-Right, L=D-Left, D=D-Down, U=D-Up
+			btn2 = data[3] // rlrlRLDU r=R-Stick/Trigger, l=L-Stick/Trigger, R=D-Right, L=D-Left, D=D-Down, U=D-Up
 
 			lt = binary.LittleEndian.Uint16(data[4:6]) // left trigger, 0..1024
 			rt = binary.LittleEndian.Uint16(data[6:8]) // right trigger
