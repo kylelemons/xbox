@@ -12,3 +12,5 @@ It should work with:
     RAZR Onza
     Microsoft XBox Wired Controller
     Microsoft XBox One (via microusb cable)
+
+You'll need to re-plug the controller before you run the binary, I haven't worked out the reset yet.

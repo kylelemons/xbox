@@ -405,7 +405,7 @@ func XBoxOne(controller *usb.Device, in, out usb.Endpoint) {
 			return 0, 0, nil, fmt.Errorf("only read %d bytes", n)
 		}
 
-		return b[0], b[1], b[2:], nil
+		return b[0], b[1], b[2:n], nil
 	}
 
 	write := func(data ...byte) error {
@@ -477,6 +477,15 @@ func XBoxOne(controller *usb.Device, in, out usb.Endpoint) {
 	for {
 		tag, _, data, _ := read()
 		switch tag {
+		case 0x07:
+			if len(data) != 4 {
+				log.Printf("Wanted %d bytes, got %d", 4, len(data))
+				break
+			}
+			log.Print(data)
+			if data[2]&0x01 != 0 {
+				log.Print("GUIDE")
+			}
 		case 0x20:
 			decode(data)
 		}
