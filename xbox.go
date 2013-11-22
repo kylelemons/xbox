@@ -442,12 +442,12 @@ func XBoxOne(controller *usb.Device, in, out usb.Endpoint) {
 			btn2 = data[3] // ?lr?RLDU r=R-Thumb, l=L-Thumb, R=D-Right, L=D-Left, D=D-Down, U=D-Up
 
 			lt = binary.LittleEndian.Uint16(data[4:6]) // left trigger, 0..1024
-			rt = binary.LittleEndian.Uint16(data[6:8]) // right trigger, 0..1024
+			rt = binary.LittleEndian.Uint16(data[6:8]) // right trigger
 
-			lx = int16(binary.LittleEndian.Uint16(data[8:10]))  // right stick X
-			ly = int16(binary.LittleEndian.Uint16(data[10:12])) // right stick X
+			lx = int16(binary.LittleEndian.Uint16(data[8:10]))  // left stick X, +/- 32768 or so
+			ly = int16(binary.LittleEndian.Uint16(data[10:12])) // left stick Y
 			rx = int16(binary.LittleEndian.Uint16(data[12:14])) // right stick X
-			ry = int16(binary.LittleEndian.Uint16(data[14:16])) // right stick X
+			ry = int16(binary.LittleEndian.Uint16(data[14:16])) // right stick Y
 		)
 
 		// btn1, least to most significant
@@ -470,8 +470,19 @@ func XBoxOne(controller *usb.Device, in, out usb.Endpoint) {
 			}
 		}
 
-		log.Print(lt, rt)
-		log.Print(lx, ly, " | ", rx, ry)
+		if lt > 0 || rt > 0 {
+			log.Println("LT:", lt, "RT:", rt)
+		}
+
+		abs := func(x int16) int16 {
+			if x < 0 {
+				return -x
+			}
+			return x
+		}
+		if abs(lx) > 4096 || abs(ly) > 4096 || abs(rx) > 4096 || abs(ry) > 4096 {
+			log.Println("Right:", lx, ly, "Left:", rx, ry)
+		}
 	}
 
 	for {
@@ -482,7 +493,6 @@ func XBoxOne(controller *usb.Device, in, out usb.Endpoint) {
 				log.Printf("Wanted %d bytes, got %d", 4, len(data))
 				break
 			}
-			log.Print(data)
 			if data[2]&0x01 != 0 {
 				log.Print("GUIDE")
 			}
